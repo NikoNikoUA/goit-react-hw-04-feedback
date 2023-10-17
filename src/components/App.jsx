@@ -1,49 +1,46 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import { Container } from './App.styled'
 import { FeedbackOptions } from '../components/FeedbackOptions/FeedbackOptions.js'
 import { Section } from '../components/Section/Section'
 import { Statistics } from '../components/Statistics/Statistics'
 import { Notification} from '../components/Notification/Notification'
 
-class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-    
-  };
+export const App = () => {
+  // const [good, setGood] = useState(0);
+  // const [neutral, setNeutral] = useState(0);
+  // const [bad, setBad] = useState(0);
+  const [state, setState] = useState({good: 0, neutral: 0, bad: 0})
+  const { good, neutral, bad } = state;
 
-  countTotalFeedback = () => {
+  const total = () => {
     return (
-      Object.values(this.state).reduce((total, number) => { return (total + number)}, 0)
+      Object.values(state).reduce((total, number) => { return (total + number)}, 0)
     )
   }
 
-  countPositiveFeedbackPercentage = (total) => {
-    const { good } = this.state;
+  const percentage = (total) => {
+    const { good } = state;
    
     return total !== 0 ? Math.round((good / total)  * 100) : 0;
   }
 
-  onLeaveFeedback = (option) => {
-    this.setState ((prevState) => {
+  const onLeaveFeedback = (option) => {
+    setState((prevState) => {
       return {
+        ...prevState,
     [option]: prevState[option] + 1,
       };
     });
   };
 
-  render() {
-    const { good, neutral, bad } = this.state;
-    const total = this.countTotalFeedback;
-    const percentage = this.countPositiveFeedbackPercentage;
-    return (
+  return (
+     
       <Container>
         <Section title={'Please leave feedback'}>
-          <FeedbackOptions options={Object.keys(this.state) } onLeaveFeedback={this.onLeaveFeedback} />
+          <FeedbackOptions options={Object.keys(state)} onLeaveFeedback={onLeaveFeedback} />
         </Section>
         <Section title={'Statistics'}>
-          {Object.values(this.state).some(value => value !== 0) ? ( 
+          {Object.values(state).some(value => value !== 0) ? ( 
             <Statistics good={good} neutral={neutral} bad={bad}
           total={total()} positivePercentage={percentage(total()) } />) :
           <Notification message={"There is no feedback"} />}
@@ -51,8 +48,7 @@ class App extends Component {
       </Container>
     )
   }
-}
 
 
 
-export default App;
+
